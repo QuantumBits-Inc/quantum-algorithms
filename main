@@ -1,0 +1,44 @@
+from qiskit import Aer, execute, QuantumCircuit, QuantumRegister
+
+def deutsch_jozsa_constant(f):
+    # Criação do circuito quântico
+    qr = QuantumRegister(2)
+    circuit = QuantumCircuit(qr)
+
+    # Aplicação do Hadamard no primeiro qubit
+    circuit.h(qr[0])
+
+    # Aplicação do X no segundo qubit
+    circuit.x(qr[1])
+
+    # Oráculo: Aplicação da função constante
+    if f == 'constant':
+        circuit.x(qr[1])
+
+    # Oráculo: Aplicação da função balanceada
+    if f == 'balanced':
+        circuit.cx(qr[0], qr[1])
+
+    # Aplicação do Hadamard no primeiro qubit novamente
+    circuit.h(qr[0])
+
+    # Medição dos qubits
+    circuit.measure_all()
+
+    # Simulação do circuito quântico
+    simulator = Aer.get_backend('qasm_simulator')
+    job = execute(circuit, simulator, shots=1)
+
+    # Resultado
+    result = job.result()
+    counts = result.get_counts()
+
+    # Verificação se a função é constante ou balanceada
+    if '0' in counts:
+        print("Função é constante")
+    else:
+        print("Função é balanceada")
+
+# Exemplo de uso
+deutsch_jozsa_constant('constant')
+deutsch_jozsa_constant('balanced')
